@@ -1,0 +1,22 @@
+#|-*- mode:lisp -*-|#
+(in-package :cl-user)
+(defpackage :lake.user
+  (:use :cl :lake :cl-syntax)
+  (:shadowing-import-from :lake
+                          :directory))
+(in-package :lake.user)
+
+(use-syntax :interpol)
+
+(defparameter system "generate-feeder")
+
+(task "clean" ()
+      (sh "rm -rf target/"))
+
+(task "default" ("generate-feeder.asd" "src/main.lisp")
+      (lake :target "clean")
+      (format t "Compiling system to target/~A~%" system)
+      (asdf:make :generate-feeder))
+
+(task "test" ("generate-feeder.asd" "src/main.lisp")
+      (asdf:test-system :generate-feeder))
